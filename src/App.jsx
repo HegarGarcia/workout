@@ -2,8 +2,7 @@ import { blue, green, grey, red } from '@material-ui/core/colors';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import 'normalize.css';
 import React from 'react';
-import AuthProvider from './context/auth';
-import LayoutProvider from './context/layout';
+import ContextProvider from './context/provider';
 import Router from './router/Router';
 import GlobalStyle from './styles/GlobalStyle';
 
@@ -32,13 +31,11 @@ export default function App() {
   return (
     <>
       <GlobalStyle />
-      <LayoutProvider>
-        <AuthProvider>
-          <ThemeProvider theme={theme}>
-            <Router />
-          </ThemeProvider>
-        </AuthProvider>
-      </LayoutProvider>
+      <ContextProvider>
+        <ThemeProvider theme={theme}>
+          <Router />
+        </ThemeProvider>
+      </ContextProvider>
     </>
   );
 }
