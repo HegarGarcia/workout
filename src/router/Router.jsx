@@ -3,7 +3,7 @@ import { BrowserRouter, Switch } from 'react-router-dom';
 import Loading from '../components/Loading';
 import PrivateRoute from '../components/PrivateRoute';
 import Layout from '../layout/Layout';
-import PublicRoute from '../components/PublicRoute';
+import RestrictedRoute from '../components/RestrictedRoute';
 
 const Cronometer = lazy(() => import('../pages/Cronometer'));
 const ForgotPassword = lazy(() => import('../pages/ForgotPassword'));
@@ -20,15 +20,15 @@ const Router = () => (
     <Layout>
       <Suspense fallback={<Loading />}>
         <Switch>
-          <PublicRoute path="/register" component={Register} exact />
-          <PublicRoute path="/signup" component={SignUp} exact />
-          <PublicRoute path="/login" component={LogIn} exact />
-          <PublicRoute
+          <RestrictedRoute path="/register" component={Register} exact />
+          <RestrictedRoute path="/signup" component={SignUp} exact />
+          <RestrictedRoute path="/login" component={LogIn} exact />
+          <RestrictedRoute
             path="/forgotpassword"
             component={ForgotPassword}
             exact
           />
-          <PublicRoute path="/welcome" component={Welcome} exact />
+          <RestrictedRoute path="/welcome" component={Welcome} exact />
           <PrivateRoute path="/" component={Home} exact />
           <PrivateRoute path="/crono" component={Cronometer} exact />
           <PrivateRoute path="/profile" component={Profile} exact />
