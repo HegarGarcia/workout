@@ -6,10 +6,10 @@ exports[`<App /> spec Should not regress 1`] = `
     class="sc-AxheI bPuNAc"
   >
     <main
-      class="sc-AxiKw dZNweh"
+      class="sc-AxhUy efgNkU"
     >
       <section
-        class="sc-AxhUy sc-AxgMl iCmFZL"
+        class="sc-AxjAm sc-AxirZ hcRbbY"
       >
         <div
           class="MuiCircularProgress-root MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate"
