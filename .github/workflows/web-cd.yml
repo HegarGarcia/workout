@@ -16,12 +16,12 @@ jobs:
           REACT_APP_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
           REACT_APP_AUTH_DOMAIN: ${{ secrets.FIREBASE_AUTH_DOMAIN }}
           REACT_APP_DB_URL: ${{ secrets.FIREBASE_DB_URL }}
-          REACT_APP_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+          REACT_APP_PROJECT_ID: ${{ secrets.PROJECT_ID }}
           REACT_APP_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
           REACT_APP_MEASUREMENT_ID: ${{ secrets.FIREBASE_MEASUREMENT_ID }}
       - uses: pizzafox/firebase-action@1.0.7
         env:
-          PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         with:
           args: deploy --only hosting
