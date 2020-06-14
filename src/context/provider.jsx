@@ -1,7 +1,8 @@
 import React, { cloneElement } from 'react';
-import FirebaseProvider from './firebase';
 import AuthProvider from './auth';
+import FirebaseProvider from './firebase';
 import LayoutProvider from './layout';
+import UserProvider from './user';
 
 const ProviderComposer = ({ contexts, children }) =>
   // eslint-disable-next-line implicit-arrow-linebreak
@@ -16,7 +17,12 @@ const ProviderComposer = ({ contexts, children }) =>
 
 const ContextProvider = ({ children }) => (
   <ProviderComposer
-    contexts={[<FirebaseProvider />, <AuthProvider />, <LayoutProvider />]}
+    contexts={[
+      <FirebaseProvider />,
+      <AuthProvider />,
+      <UserProvider />,
+      <LayoutProvider />
+    ]}
   >
     {children}
   </ProviderComposer>

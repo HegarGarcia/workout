@@ -1,5 +1,5 @@
 // eslint-disable-next-line object-curly-newline
-import React, { createContext, useCallback, useState, useEffect } from 'react';
+import React, { createContext, useCallback, useEffect } from 'react';
 import firebase from 'firebase';
 import useFirebase from '../hook/firebase';
 
@@ -11,7 +11,6 @@ class AuthError extends Error {
 }
 
 export const AuthContext = createContext({
-  user: {},
   // eslint-disable-next-line no-unused-vars
   async loginWithEmailAndPassword({ email, password }) {
     return Promise.resolve();
@@ -29,12 +28,31 @@ export const AuthContext = createContext({
 });
 
 const AuthProvider = ({ children }) => {
-  const { auth } = useFirebase();
-  const [user, setUser] = useState(auth.currentUser);
+  const { auth, firestore } = useFirebase();
 
   useEffect(() => {
-    auth.onAuthStateChanged(setUser);
+    (async () => {
+      if (process.env.NODE_ENV === 'test') return;
+
+      await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+    })();
   }, [auth]);
+
+  const registerUser = useCallback(
+    ({ uid, name, email, gender, photoURL, ...user }) => {
+      firestore
+        .collection('user')
+        .doc(uid)
+        .set({
+          name: name || user.displayName,
+          gender,
+          email,
+          uid,
+          photoURL
+        });
+    },
+    [firestore]
+  );
 
   const signOut = useCallback(async () => {
     await auth.signOut();
@@ -65,7 +83,8 @@ const AuthProvider = ({ children }) => {
   const loginWithGoogle = useCallback(async () => {
     const googleProvider = new firebase.auth.GoogleAuthProvider();
     try {
-      await auth.signInWithPopup(googleProvider);
+      const user = await auth.signInWithPopup(googleProvider);
+      registerUser({ ...user.user, gender: '' });
     } catch (error) {
       switch (error.code) {
         case 'auth/account-exists-with-different-credential':
@@ -88,17 +107,17 @@ const AuthProvider = ({ children }) => {
           throw new AuthError();
       }
     }
-  }, [auth]);
+  }, [auth, registerUser]);
 
   const signUpWithEmailAndPassword = useCallback(
-    async ({ email, password }) => {
+    async ({ email, password, name, gender }) => {
       try {
-        const credentials = await auth.createUserWithEmailAndPassword(
+        const { user } = await auth.createUserWithEmailAndPassword(
           email,
           password
         );
 
-        await credentials.user.sendEmailVerification();
+        registerUser({ ...user, name, gender });
       } catch (error) {
         switch (error.code) {
           case 'auth/email-already-in-use':
@@ -112,17 +131,14 @@ const AuthProvider = ({ children }) => {
           default:
             throw new AuthError();
         }
-      } finally {
-        await signOut();
       }
     },
-    [auth, signOut]
+    [auth, registerUser]
   );
 
   return (
     <AuthContext.Provider
       value={{
-        user,
         loginWithEmailAndPassword,
         loginWithGoogle,
         signUpWithEmailAndPassword,
