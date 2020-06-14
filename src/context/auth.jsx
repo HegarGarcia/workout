@@ -86,8 +86,6 @@ const AuthProvider = ({ children }) => {
       const user = await auth.signInWithPopup(googleProvider);
       registerUser({ ...user.user, gender: '' });
     } catch (error) {
-      console.log(error);
-
       switch (error.code) {
         case 'auth/account-exists-with-different-credential':
           throw new AuthError('Account already exists');
