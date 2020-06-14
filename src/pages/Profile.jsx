@@ -5,12 +5,11 @@ import {
   makeStyles,
   Typography
 } from '@material-ui/core';
-import React, { useCallback, useContext, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useCallback, useEffect } from 'react';
 import styled from 'styled-components';
-import ProfileImg from '../assets/profile.jpg';
-import { AuthContext } from '../context/auth';
-import { LayoutContext } from '../context/layout';
+import useAuth from '../hook/auth';
+import useLayout from '../hook/layout';
+import useUser from '../hook/user';
 
 const useStyles = makeStyles((theme) => ({
   large: {
@@ -53,43 +52,39 @@ const StyledList = styled.ul`
 `;
 
 const Profile = () => {
-  const history = useHistory();
-  const { setMain } = useContext(LayoutContext);
-  const { logout } = useContext(AuthContext);
-
-  const signout = useCallback(() => {
-    logout();
-    history.push('/welcome');
-  }, [history, logout]);
+  const classes = useStyles();
+  const { setMain } = useLayout();
+  const { signOut } = useAuth();
+  const { user } = useUser();
 
   useEffect(() => {
     setMain({ title: 'Profile' });
   }, [setMain]);
 
-  const classes = useStyles();
+  const logOut = useCallback(async () => {
+    await signOut();
+  }, [signOut]);
 
   return (
     <Wrapper>
-      <Avatar src={ProfileImg} className={classes.large} />
+      <Avatar src={user.photoURL} className={classes.large} />
       <StyledList>
         <li>
           <Typography variant="overline">Name</Typography>
-          <Typography variant="subtitle1">Ritthy Hoffman</Typography>
+          <Typography variant="subtitle1">{user.name}</Typography>
         </li>
         <Divider />
         <li>
           <Typography variant="overline">Email</Typography>
-          <Typography variant="subtitle1">
-            ritthy.hoffman@example.com
-          </Typography>
+          <Typography variant="subtitle1">{user.email}</Typography>
         </li>
         <Divider />
         <li>
           <Typography variant="overline">Gender</Typography>
-          <Typography variant="subtitle1">Male</Typography>
+          <Typography variant="subtitle1">{user.gender}</Typography>
         </li>
       </StyledList>
-      <Button onClick={signout}>Sign out</Button>
+      <Button onClick={logOut}>Sign out</Button>
     </Wrapper>
   );
 };

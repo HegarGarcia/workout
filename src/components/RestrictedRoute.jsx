@@ -1,13 +1,13 @@
 import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
-import useAuth from '../hook/auth';
+import useUser from '../hook/user';
 
 const PublicRoute = ({ component: Component, ...rest }) => {
-  const { user } = useAuth();
+  const { user } = useUser();
 
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
-    <Route {...rest}>{!user ? <Component /> : <Redirect to="/" />}</Route>
+    <Route {...rest}>{!user.uid ? <Component /> : <Redirect to="/" />}</Route>
   );
 };
 
