@@ -3,18 +3,15 @@ import React, { useCallback, useContext, useEffect } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import RunningImg from '../assets/running.jpeg';
 import GoogleButton from '../components/GoogleButton';
-import { AuthContext } from '../context/auth';
 import { LayoutContext } from '../context/layout';
 import CenterWrapper from '../styles/CenterWrapper';
 
 const SignUp = () => {
   const history = useHistory();
-  const { login } = useContext(AuthContext);
   const { setAuth } = useContext(LayoutContext);
   const signup = useCallback(() => {
-    login();
     history.push('/');
-  }, [login, history]);
+  }, [history]);
 
   useEffect(() => {
     setAuth({ bg: 'img', src: RunningImg });

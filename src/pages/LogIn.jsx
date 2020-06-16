@@ -1,61 +1,65 @@
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import React, { useCallback, useEffect, useReducer } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import styled from 'styled-components';
 import StrechingImg from '../assets/streching.jpg';
 import GoogleButton from '../components/GoogleButton';
 import PasswordInput from '../components/PasswordInput';
-import useAuth from '../hook/auth';
 import useLayout from '../hook/layout';
 import CenterWrapper from '../styles/CenterWrapper';
+import { loginWithEmailAndPassword, loginWithGoogle } from '../service/auth';
+import useForm from '../hook/form';
 
-const reducer = (state, action) => {
-  switch (action.type) {
-    case 'change':
-      return { ...state, [action.field]: action.payload };
-    default:
-      return state;
-  }
-};
+const Form = styled.form`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  align-content: center;
+`;
 
 const LogIn = () => {
-  const [credentials, dispatch] = useReducer(reducer, {
+  const { values, onChange } = useForm({
     email: '',
     password: ''
   });
+
   const { setAuth } = useLayout();
-  const { loginWithEmailAndPassword, loginWithGoogle } = useAuth();
 
   useEffect(() => {
     setAuth({ bg: 'img', src: StrechingImg });
   }, [setAuth]);
 
-  const signin = useCallback(async () => {
-    await loginWithEmailAndPassword({
-      email: credentials.email,
-      password: credentials.password
-    });
-  }, [credentials.email, credentials.password, loginWithEmailAndPassword]);
+  const onSubmit = useCallback(
+    async (event) => {
+      event.preventDefault();
+      event.persist();
 
-  const onChange = useCallback(({ target }) => {
-    dispatch({ type: 'change', field: target.name, payload: target.value });
-  }, []);
+      await loginWithEmailAndPassword({
+        email: values.email,
+        password: values.password
+      });
+    },
+    [values]
+  );
 
   return (
     <CenterWrapper>
-      <TextField
-        fullWidth
-        variant="filled"
-        label="Email"
-        type="email"
-        color="primary"
-        name="email"
-        onChange={onChange}
-      />
-      <PasswordInput label="Password" onChange={onChange} name="password" />
-      <Button onClick={signin} variant="contained" color="primary" fullWidth>
-        Log In
-      </Button>
+      <Form onSubmit={onSubmit}>
+        <TextField
+          fullWidth
+          variant="filled"
+          label="Email"
+          type="email"
+          color="primary"
+          name="email"
+          onChange={onChange}
+        />
+        <PasswordInput label="Password" onChange={onChange} name="password" />
+        <Button variant="contained" color="primary" fullWidth type="submit">
+          Log In
+        </Button>
+      </Form>
       <GoogleButton onClick={loginWithGoogle} />
       <Button to="/signup" component={Link} fullWidth>
         Sign Up

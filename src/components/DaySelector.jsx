@@ -1,7 +1,7 @@
 /* eslint-disable implicit-arrow-linebreak */
 import Typography from '@material-ui/core/Typography';
 import moment from 'moment';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, memo, useEffect } from 'react';
 import styled, { css } from 'styled-components';
 
 const Container = styled.div`
@@ -75,9 +75,13 @@ const Day = ({ dayName, dayNumber, active }) => (
   </DayContainer>
 );
 
-const DaySelector = () => {
-  const [selectedDay, setSelectedDay] = useState(new Date().getDay());
+const DaySelector = memo(({ onChange }) => {
+  const [selectedDay, setSelectedDay] = useState(new Date().getDate());
   const days = getWeekEntries();
+
+  useEffect(() => {
+    onChange(selectedDay);
+  }, [selectedDay, onChange]);
 
   const handleClick = useCallback((event) => {
     const { day } = event.target.closest('button').dataset;
@@ -96,6 +100,6 @@ const DaySelector = () => {
       ))}
     </Container>
   );
-};
+});
 
 export default DaySelector;

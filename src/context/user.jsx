@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useState } from 'react';
-import useFirebase from '../hook/firebase';
+import { auth, firestore } from '../service/firebase';
 
 export const UserContext = createContext();
 
@@ -18,7 +18,6 @@ const getUser = ({
 });
 
 const UserProvider = ({ children }) => {
-  const { auth, firestore } = useFirebase();
   const [user, setUser] = useState(getUser());
 
   useEffect(() => {
@@ -31,7 +30,7 @@ const UserProvider = ({ children }) => {
         setUser(getUser());
       }
     });
-  }, [auth, firestore]);
+  }, []);
 
   return (
     <UserContext.Provider value={{ user }}>{children}</UserContext.Provider>

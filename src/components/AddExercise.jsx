@@ -43,13 +43,21 @@ const Transition = React.forwardRef((props, ref) => (
   <Slide direction="up" ref={ref} {...props} />
 ));
 
-const AddExercise = ({ isOpen, handleClose }) => {
+const AddExercise = ({ isOpen, handleClose, handleSubmit }) => {
   const classes = useStyles();
   const [exercise, setExercise] = useState('');
   const handleSelect = useCallback(
     (event) => setExercise(event.target.value),
     []
   );
+  const [reps, setReps] = useState();
+  const onChange = (event) => setReps(+event.target.value);
+
+  const submit = useCallback(() => handleSubmit({ exercise, reps }), [
+    exercise,
+    reps,
+    handleSubmit
+  ]);
 
   return (
     <Dialog
@@ -71,7 +79,7 @@ const AddExercise = ({ isOpen, handleClose }) => {
           <Typography variant="h6" className={classes.title}>
             Add Exercise
           </Typography>
-          <Button color="inherit" onClick={handleClose}>
+          <Button color="inherit" onClick={submit}>
             save
           </Button>
         </Toolbar>
@@ -86,14 +94,20 @@ const AddExercise = ({ isOpen, handleClose }) => {
             label="Gender"
             fullWidth
           >
-            <MenuItem value="pushups">Push Ups</MenuItem>
-            <MenuItem value="pullups">Pull Ups</MenuItem>
-            <MenuItem value="squads">Squads</MenuItem>
-            <MenuItem value="burpees">Burpees</MenuItem>
-            <MenuItem value="mountain climber">Mountain Climber</MenuItem>
+            <MenuItem value="Push Ups">Push Ups</MenuItem>
+            <MenuItem value="Pull Ups">Pull Ups</MenuItem>
+            <MenuItem value="Squads">Squads</MenuItem>
+            <MenuItem value="Burpees">Burpees</MenuItem>
+            <MenuItem value="Mountain Climber">Mountain Climber</MenuItem>
           </Select>
         </FormControl>
-        <TextField fullWidth variant="filled" label="Reps" />
+        <TextField
+          fullWidth
+          variant="filled"
+          label="Reps"
+          type="number"
+          onChange={onChange}
+        />
       </Wrapper>
     </Dialog>
   );

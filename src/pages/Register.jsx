@@ -4,97 +4,96 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
-import React, { useCallback, useEffect, useReducer } from 'react';
+import React, { useCallback, useEffect, memo } from 'react';
+import styled from 'styled-components';
 import RunningImg from '../assets/running.jpeg';
 import PasswordInput from '../components/PasswordInput';
-import useAuth from '../hook/auth';
+import useForm from '../hook/form';
 import useLayout from '../hook/layout';
+import { signUpWithEmailAndPassword } from '../service/auth';
 import CenterWrapper from '../styles/CenterWrapper';
 
-const initialState = {
-  name: '',
-  gender: '',
-  email: '',
-  password: '',
-  confirmPassword: ''
-};
+const Form = styled.form`
+  width: 100%;
+  height: 100%;
+`;
 
-const reducer = (state, action) => {
-  switch (action.type) {
-    case 'change':
-      return { ...state, [action.field]: action.payload };
-    default:
-      return state;
-  }
-};
-
-const Register = () => {
-  const [user, dispatch] = useReducer(reducer, initialState);
-  const { signUpWithEmailAndPassword } = useAuth();
+const Register = memo(() => {
+  const { values, onChange } = useForm({
+    name: '',
+    gender: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  });
   const { setAuthForm } = useLayout();
 
   useEffect(() => {
     setAuthForm({ bg: 'img', src: RunningImg, title: 'Register with Email' });
   }, [setAuthForm]);
 
-  const register = useCallback(async () => {
-    const { email, password, confirmPassword, name, gender } = user;
+  const submit = useCallback(
+    async (event) => {
+      event.preventDefault();
+      event.persist();
 
-    if (password && password !== confirmPassword) {
-      return;
-    }
+      const { email, password, confirmPassword, name, gender } = values;
 
-    await signUpWithEmailAndPassword({ email, password, name, gender });
-  }, [signUpWithEmailAndPassword, user]);
+      if (!password || !confirmPassword || password !== confirmPassword) {
+        return;
+      }
 
-  const onChange = useCallback(({ target }) => {
-    dispatch({ type: 'change', field: target.name, payload: target.value });
-  }, []);
+      await signUpWithEmailAndPassword({ email, password, name, gender });
+    },
+    [values]
+  );
 
   return (
-    <CenterWrapper>
-      <TextField
-        fullWidth
-        variant="filled"
-        label="Name"
-        name="name"
-        onChange={onChange}
-      />
-      <FormControl variant="filled">
-        <InputLabel id="gender">Gender</InputLabel>
-        <Select
-          labelId="gender"
-          label="Gender"
-          name="gender"
+    <Form onSubmit={submit}>
+      <CenterWrapper>
+        <TextField
           fullWidth
-          value={user.gender}
+          variant="filled"
+          label="Name"
+          name="name"
           onChange={onChange}
-        >
-          <MenuItem value="male">Male</MenuItem>
-          <MenuItem value="female">Female</MenuItem>
-          <MenuItem value="other">Other</MenuItem>
-        </Select>
-      </FormControl>
+        />
+        <FormControl variant="filled">
+          <InputLabel id="gender">Gender</InputLabel>
+          <Select
+            labelId="gender"
+            label="Gender"
+            name="gender"
+            fullWidth
+            value={values.gender}
+            onChange={onChange}
+          >
+            <MenuItem value="male">Male</MenuItem>
+            <MenuItem value="female">Female</MenuItem>
+            <MenuItem value="other">Other</MenuItem>
+          </Select>
+        </FormControl>
 
-      <TextField
-        fullWidth
-        variant="filled"
-        label="Email"
-        type="email"
-        name="email"
-        onChange={onChange}
-      />
-      <PasswordInput label="Password" name="password" onChange={onChange} />
-      <PasswordInput
-        label="Confirm Password"
-        name="confirmPassword"
-        onChange={onChange}
-      />
-      <Button variant="contained" color="primary" fullWidth onClick={register}>
-        REGISTER
-      </Button>
-    </CenterWrapper>
+        <TextField
+          fullWidth
+          variant="filled"
+          label="Email"
+          type="email"
+          name="email"
+          onChange={onChange}
+        />
+        <PasswordInput label="Password" name="password" onChange={onChange} />
+        <PasswordInput
+          label="Confirm Password"
+          name="confirmPassword"
+          onChange={onChange}
+        />
+        <Button variant="contained" color="primary" fullWidth type="submit">
+          REGISTER
+        </Button>
+      </CenterWrapper>
+    </Form>
   );
-};
+});
 
 export default Register;

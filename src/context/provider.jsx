@@ -1,6 +1,4 @@
 import React, { cloneElement } from 'react';
-import AuthProvider from './auth';
-import FirebaseProvider from './firebase';
 import LayoutProvider from './layout';
 import UserProvider from './user';
 
@@ -16,14 +14,7 @@ const ProviderComposer = ({ contexts, children }) =>
   );
 
 const ContextProvider = ({ children }) => (
-  <ProviderComposer
-    contexts={[
-      <FirebaseProvider />,
-      <AuthProvider />,
-      <UserProvider />,
-      <LayoutProvider />
-    ]}
-  >
+  <ProviderComposer contexts={[<UserProvider />, <LayoutProvider />]}>
     {children}
   </ProviderComposer>
 );
