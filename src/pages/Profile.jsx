@@ -5,11 +5,11 @@ import {
   makeStyles,
   Typography
 } from '@material-ui/core';
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import useAuth from '../hook/auth';
 import useLayout from '../hook/layout';
 import useUser from '../hook/user';
+import { signOut } from '../service/auth';
 
 const useStyles = makeStyles((theme) => ({
   large: {
@@ -54,16 +54,11 @@ const StyledList = styled.ul`
 const Profile = () => {
   const classes = useStyles();
   const { setMain } = useLayout();
-  const { signOut } = useAuth();
   const { user } = useUser();
 
   useEffect(() => {
     setMain({ title: 'Profile' });
   }, [setMain]);
-
-  const logOut = useCallback(async () => {
-    await signOut();
-  }, [signOut]);
 
   return (
     <Wrapper>
@@ -84,7 +79,7 @@ const Profile = () => {
           <Typography variant="subtitle1">{user.gender}</Typography>
         </li>
       </StyledList>
-      <Button onClick={logOut}>Sign out</Button>
+      <Button onClick={signOut}>Sign out</Button>
     </Wrapper>
   );
 };
