@@ -4,13 +4,13 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import { Add, PlayArrow, Reorder } from '@material-ui/icons';
-import React, { useCallback, useContext, useEffect, useReducer } from 'react';
+import React, { useCallback, useReducer } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import moment from 'moment';
 import AddExercise from '../components/AddExercise';
 import DaySelector from '../components/DaySelector';
-import { LayoutContext } from '../context/layout';
+import withMainLayout from '../hoc/withMainLayout';
 
 const formatter = new Intl.NumberFormat();
 const getDateFormated = () => new Date().toDateString().substr(3, 7);
@@ -69,7 +69,6 @@ const FabContainer = styled.div`
 `;
 
 const Home = () => {
-  const { setMain } = useContext(LayoutContext);
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const handleClose = useCallback(() => dispatch({ type: 'close' }), []);
@@ -85,10 +84,6 @@ const Home = () => {
     },
     [handleClose]
   );
-
-  useEffect(() => {
-    setMain({ title: getDateFormated() });
-  }, [setMain]);
 
   return (
     <StyledSection>
@@ -115,4 +110,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default withMainLayout({ title: getDateFormated() })(Home);

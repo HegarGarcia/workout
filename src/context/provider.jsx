@@ -1,5 +1,4 @@
 import React, { cloneElement } from 'react';
-import LayoutProvider from './layout';
 import UserProvider from './user';
 
 const ProviderComposer = ({ contexts, children }) =>
@@ -14,9 +13,7 @@ const ProviderComposer = ({ contexts, children }) =>
   );
 
 const ContextProvider = ({ children }) => (
-  <ProviderComposer contexts={[<UserProvider />, <LayoutProvider />]}>
-    {children}
-  </ProviderComposer>
+  <ProviderComposer contexts={[<UserProvider />]}>{children}</ProviderComposer>
 );
 
 export default ContextProvider;

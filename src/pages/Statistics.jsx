@@ -1,8 +1,8 @@
 import { Card, CardContent, makeStyles, Typography } from '@material-ui/core';
-import React, { useContext, useEffect } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import DaySelector from '../components/DaySelector';
-import { LayoutContext } from '../context/layout';
+import withMainLayout from '../hoc/withMainLayout';
 
 const StyledSection = styled.section`
   width: 100%;
@@ -33,13 +33,11 @@ const useStyles = makeStyles({
 });
 
 const Statistics = () => {
-  const { setMain } = useContext(LayoutContext);
-  useEffect(() => setMain({ title: 'Statistics' }), [setMain]);
   const classes = useStyles();
 
   return (
     <StyledSection>
-      <DaySelector />
+      <DaySelector onChange={() => {}} />
       <StatsContainer>
         <Card variant="outlined" className={classes.card}>
           <CardContent>
@@ -74,4 +72,4 @@ const Statistics = () => {
   );
 };
 
-export default Statistics;
+export default withMainLayout({ title: 'Statistics' })(Statistics);

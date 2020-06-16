@@ -1,9 +1,9 @@
-import React, { useContext, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
-import Running from '../assets/opening.jpeg';
+import RunningImg from '../assets/opening.jpeg';
 import Logo from '../components/Logo';
-import { LayoutContext } from '../context/layout';
+import withCleanLayout from '../hoc/withCleanLayout';
 
 const Container = styled.section`
   width: 100%;
@@ -59,31 +59,23 @@ const Button = styled(Link)`
     `}
 `;
 
-const Welcome = () => {
-  const { setClean } = useContext(LayoutContext);
+const Welcome = () => (
+  <Container>
+    <Hero>
+      <Logo size="big" />
+      <span>Don&apos;t miss a day</span>
+    </Hero>
 
-  useEffect(() => {
-    setClean(Running);
-  }, [setClean]);
+    <BottomContainer>
+      <Button to="signup" highlight="true">
+        <span>Join</span>
+      </Button>
 
-  return (
-    <Container>
-      <Hero>
-        <Logo size="big" />
-        <span>Don&apos;t miss a day</span>
-      </Hero>
+      <Button to="login">
+        <span>Log In</span>
+      </Button>
+    </BottomContainer>
+  </Container>
+);
 
-      <BottomContainer>
-        <Button to="signup" highlight="true">
-          <span>Join</span>
-        </Button>
-
-        <Button to="login">
-          <span>Log In</span>
-        </Button>
-      </BottomContainer>
-    </Container>
-  );
-};
-
-export default Welcome;
+export default withCleanLayout({ src: RunningImg })(Welcome);
