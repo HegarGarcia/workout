@@ -1,19 +1,17 @@
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  Fab,
-  makeStyles,
-  Paper,
-  Typography
-} from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import Fab from '@material-ui/core/Fab';
+import Paper from '@material-ui/core/Paper';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import Typography from '@material-ui/core/Typography';
 import { Pause, PlayArrow, Stop } from '@material-ui/icons';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
-import { LayoutContext } from '../context/layout';
+import withCleanLayout from '../hoc/withCleanLayout';
 
 const useStyles = makeStyles((theme) => ({
   stop: {
@@ -76,8 +74,6 @@ const ActionsButtons = styled.div`
 const Cronometer = () => {
   const history = useHistory();
   const [isOpen, setIsOpen] = useState(false);
-  const { setClean } = useContext(LayoutContext);
-  useEffect(() => setClean(), [setClean]);
   const classes = useStyles();
 
   const handleOpen = useCallback(() => setIsOpen(true), []);
@@ -123,4 +119,4 @@ const Cronometer = () => {
   );
 };
 
-export default Cronometer;
+export default withCleanLayout()(Cronometer);

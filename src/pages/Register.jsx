@@ -4,14 +4,14 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
-import React, { useCallback, useEffect, memo } from 'react';
+import React, { useCallback, memo } from 'react';
 import styled from 'styled-components';
 import RunningImg from '../assets/running.jpeg';
 import PasswordInput from '../components/PasswordInput';
 import useForm from '../hook/form';
-import useLayout from '../hook/layout';
 import { signUpWithEmailAndPassword } from '../service/auth';
 import CenterWrapper from '../styles/CenterWrapper';
+import withAuthFormLayout from '../hoc/withAuthFormLayout';
 
 const Form = styled.form`
   width: 100%;
@@ -26,11 +26,6 @@ const Register = memo(() => {
     password: '',
     confirmPassword: ''
   });
-  const { setAuthForm } = useLayout();
-
-  useEffect(() => {
-    setAuthForm({ bg: 'img', src: RunningImg, title: 'Register with Email' });
-  }, [setAuthForm]);
 
   const submit = useCallback(
     async (event) => {
@@ -96,4 +91,7 @@ const Register = memo(() => {
   );
 });
 
-export default Register;
+export default withAuthFormLayout({
+  src: RunningImg,
+  title: 'Register with Email'
+})(Register);

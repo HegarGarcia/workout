@@ -1,15 +1,15 @@
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import StrechingImg from '../assets/streching.jpg';
 import GoogleButton from '../components/GoogleButton';
 import PasswordInput from '../components/PasswordInput';
-import useLayout from '../hook/layout';
 import CenterWrapper from '../styles/CenterWrapper';
 import { loginWithEmailAndPassword, loginWithGoogle } from '../service/auth';
 import useForm from '../hook/form';
+import withAuthLayout from '../hoc/withAuthLayout';
 
 const Form = styled.form`
   display: grid;
@@ -23,12 +23,6 @@ const LogIn = () => {
     email: '',
     password: ''
   });
-
-  const { setAuth } = useLayout();
-
-  useEffect(() => {
-    setAuth({ bg: 'img', src: StrechingImg });
-  }, [setAuth]);
 
   const onSubmit = useCallback(
     async (event) => {
@@ -71,4 +65,4 @@ const LogIn = () => {
   );
 };
 
-export default LogIn;
+export default withAuthLayout({ src: StrechingImg })(LogIn);

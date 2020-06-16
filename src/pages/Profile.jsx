@@ -1,13 +1,11 @@
-import {
-  Avatar,
-  Button,
-  Divider,
-  makeStyles,
-  Typography
-} from '@material-ui/core';
-import React, { useEffect } from 'react';
+import Avatar from '@material-ui/core/Avatar';
+import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import Typography from '@material-ui/core/Typography';
+import React from 'react';
 import styled from 'styled-components';
-import useLayout from '../hook/layout';
+import withMainLayout from '../hoc/withMainLayout';
 import useUser from '../hook/user';
 import { signOut } from '../service/auth';
 
@@ -53,12 +51,7 @@ const StyledList = styled.ul`
 
 const Profile = () => {
   const classes = useStyles();
-  const { setMain } = useLayout();
   const { user } = useUser();
-
-  useEffect(() => {
-    setMain({ title: 'Profile' });
-  }, [setMain]);
 
   return (
     <Wrapper>
@@ -76,7 +69,9 @@ const Profile = () => {
         <Divider />
         <li>
           <Typography variant="overline">Gender</Typography>
-          <Typography variant="subtitle1">{user.gender}</Typography>
+          <Typography variant="subtitle1">
+            {user.gender.toUpperCase()}
+          </Typography>
         </li>
       </StyledList>
       <Button onClick={signOut}>Sign out</Button>
@@ -84,4 +79,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default withMainLayout({ title: 'Profile' })(Profile);

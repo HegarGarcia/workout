@@ -2,36 +2,28 @@
 
 exports[`<App /> spec Should not regress 1`] = `
 <div>
-  <div
-    class="sc-AxheI bPuNAc"
+  <section
+    class="sc-AxjAm sc-AxirZ ifQnxN"
   >
-    <main
-      class="sc-AxiKw dZNweh"
+    <div
+      class="MuiCircularProgress-root MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate"
+      role="progressbar"
+      style="width: 40px; height: 40px;"
     >
-      <section
-        class="sc-AxhUy sc-AxgMl iCmFZL"
+      <svg
+        class="MuiCircularProgress-svg"
+        viewBox="22 22 44 44"
       >
-        <div
-          class="MuiCircularProgress-root MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate"
-          role="progressbar"
-          style="width: 40px; height: 40px;"
-        >
-          <svg
-            class="MuiCircularProgress-svg"
-            viewBox="22 22 44 44"
-          >
-            <circle
-              class="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate"
-              cx="44"
-              cy="44"
-              fill="none"
-              r="20.2"
-              stroke-width="3.6"
-            />
-          </svg>
-        </div>
-      </section>
-    </main>
-  </div>
+        <circle
+          class="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate"
+          cx="44"
+          cy="44"
+          fill="none"
+          r="20.2"
+          stroke-width="3.6"
+        />
+      </svg>
+    </div>
+  </section>
 </div>
 `;
