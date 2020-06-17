@@ -50,7 +50,8 @@ export const auth = {
     return Promise.resolve({ user });
   }),
   signOut: jest.fn(),
-  sendPasswordResetEmail: jest.fn()
+  sendPasswordResetEmail: jest.fn(),
+  onAuthStateChanged: jest.fn()
 };
 
 export const app = {
