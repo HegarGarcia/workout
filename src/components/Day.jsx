@@ -38,17 +38,18 @@ const StyledDay = styled.div`
     return css`
       background: #768fff;
     `;
-  }}}
-    
+  }}
+
   span {
     font-size: 11px;
     font-weight: 500;
     margin-left: 1px;
   }
 `;
+
 function Day({ date, active }) {
   return (
-    <DayContainer data-date={date.date}>
+    <DayContainer data-date={date.date} data-testid="day-container">
       <Typography variant="overline" component="p">
         {date.weekDay}
       </Typography>
