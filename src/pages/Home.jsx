@@ -1,56 +1,15 @@
 import Fab from '@material-ui/core/Fab';
 import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import { Add, PlayArrow, Reorder } from '@material-ui/icons';
-import React, { useCallback, useReducer } from 'react';
+import { Add, PlayArrow } from '@material-ui/icons';
+import React, { useCallback, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import moment from 'moment';
 import AddExercise from '../components/AddExercise';
 import DaySelector from '../components/DaySelector';
+import Exercise from '../components/Exercise';
 import withMainLayout from '../hoc/withMainLayout';
-
-const formatter = new Intl.NumberFormat();
-const getDateFormated = () => new Date().toDateString().substr(3, 7);
-
-const initialState = {
-  modalStatus: false,
-  selectedDay: moment().startOf('day').format('YYYY MM DD'),
-  exercises: []
-};
-
-const reducer = (state, action) => {
-  switch (action.type) {
-    case 'open':
-      return { ...state, modalStatus: true };
-    case 'close':
-      return { ...state, modalStatus: false };
-    case 'selectDay':
-      return { ...state, selectedDay: action.payload };
-    case 'addExercise':
-      return { ...state, exercises: [...state.exercises, action.payload] };
-    default:
-      return state;
-  }
-};
-
-const Exercise = ({ exercise, reps }) => (
-  <ListItem>
-    <ListItemText
-      primary={exercise}
-      secondary={`${formatter.format(reps)} reps`}
-    />
-    <ListItemSecondaryAction>
-      <Reorder />
-    </ListItemSecondaryAction>
-  </ListItem>
-);
-
-const formatDate = (day) =>
-  // eslint-disable-next-line implicit-arrow-linebreak
-  moment().date(day).startOf('day').format('YYYY MM DD');
+import useWorkout from '../hook/workout';
+import { getToday } from '../utils/date';
 
 const StyledSection = styled.section`
   width: 100%;
@@ -69,45 +28,51 @@ const FabContainer = styled.div`
 `;
 
 const Home = () => {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [selectedDay, setSelectedDay] = useState(getToday());
+  const [isModalOpen, setIsModelOpen] = useState(false);
+  const { workout, addExercise } = useWorkout(selectedDay);
 
-  const handleClose = useCallback(() => dispatch({ type: 'close' }), []);
-  const handleOpen = useCallback(() => dispatch({ type: 'open' }), []);
-  const handleDayChange = useCallback(
-    (day) => dispatch({ type: 'selectDay', payload: formatDate(day) }),
-    []
-  );
-  const addExercise = useCallback(
-    (exercise) => {
-      dispatch({ type: 'addExercise', payload: exercise });
-      handleClose();
+  const openModal = useCallback(() => setIsModelOpen(true), []);
+  const closeModal = useCallback(() => setIsModelOpen(false), []);
+  const onDayChange = useCallback((event) => {
+    const { date } = event.target.closest('[data-date]').dataset;
+    setSelectedDay(date);
+  }, []);
+  const onExerciseAdd = useCallback(
+    async ({ exercise, reps }) => {
+      await addExercise({ name: exercise, reps });
+      closeModal();
     },
-    [handleClose]
+    [addExercise, closeModal]
   );
+
+  const ExerciseList = useMemo(() => {
+    const { exercises } = workout;
+    return exercises.map((exercise, index) => (
+      // eslint-disable-next-line react/no-array-index-key
+      <Exercise key={index} exercise={exercise} />
+    ));
+  }, [workout]);
 
   return (
     <StyledSection>
-      <DaySelector onChange={handleDayChange} />
-      <List>
-        {state.exercises.map(({ exercise, reps }) => (
-          <Exercise key={exercise + reps} exercise={exercise} reps={reps} />
-        ))}
-      </List>
+      <DaySelector value={selectedDay} onChange={onDayChange} />
+      <List>{ExerciseList}</List>
       <FabContainer>
         <Fab color="secondary" aria-label="start" component={Link} to="/crono">
           <PlayArrow />
         </Fab>
-        <Fab color="primary" aria-label="add" onClick={handleOpen}>
+        <Fab color="primary" aria-label="add" onClick={openModal}>
           <Add />
         </Fab>
       </FabContainer>
       <AddExercise
-        isOpen={state.modalStatus}
-        handleClose={handleClose}
-        handleSubmit={addExercise}
+        isOpen={isModalOpen}
+        handleClose={closeModal}
+        handleSubmit={onExerciseAdd}
       />
     </StyledSection>
   );
 };
 
-export default withMainLayout({ title: getDateFormated() })(Home);
+export default withMainLayout({ title: 'Exercises' })(Home);

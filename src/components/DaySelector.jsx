@@ -1,8 +1,9 @@
-/* eslint-disable implicit-arrow-linebreak */
-import Typography from '@material-ui/core/Typography';
-import moment from 'moment';
-import React, { useCallback, useState, memo, useEffect } from 'react';
-import styled, { css } from 'styled-components';
+import React, { memo } from 'react';
+import styled from 'styled-components';
+import Day from './Day';
+import { getWeek } from '../utils/date';
+
+const week = getWeek();
 
 const Container = styled.div`
   width: 100%;
@@ -17,89 +18,14 @@ const Container = styled.div`
   justify-items: center;
 `;
 
-const DayContainer = styled.button`
-  display: flex;
-  flex-direction: column;
-  background: transparent;
-  border: none;
-  color: white;
-  outline: none;
-  text-transform: uppercase;
-  text-align: center;
-  align-items: center;
-
-  p {
-    color: rgba(255, 255, 255, 0.36);
-  }
-`;
-
-const StyledDay = styled.div`
-  height: 30px;
-  width: 30px;
-  border-radius: 50%;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.25s ease-in-out;
-
-  ${({ active }) =>
-    active &&
-    css`
-      background: #768fff;
-    `}
-  span {
-    font-size: 11px;
-    font-weight: 500;
-    margin-left: 1px;
-  }
-`;
-
-const getWeekEntries = () => {
-  const week = moment();
-
-  return Array.from({ length: 7 }, (_, i) => {
-    const day = week.day(i);
-    return [+day.format('D'), day.format('ddd')];
-  });
-};
-
-const Day = ({ dayName, dayNumber, active }) => (
-  <DayContainer data-day={dayNumber}>
-    <Typography variant="overline" component="p">
-      {dayName}
-    </Typography>
-    <StyledDay active={active}>
-      <span>{dayNumber}</span>
-    </StyledDay>
-  </DayContainer>
-);
-
-const DaySelector = memo(({ onChange }) => {
-  const [selectedDay, setSelectedDay] = useState(new Date().getDate());
-  const days = getWeekEntries();
-
-  useEffect(() => {
-    onChange(selectedDay);
-  }, [selectedDay, onChange]);
-
-  const handleClick = useCallback((event) => {
-    const { day } = event.target.closest('button').dataset;
-    setSelectedDay(+day);
-  }, []);
-
+function DaySelector({ value: selected, onChange }) {
   return (
-    <Container onClick={handleClick}>
-      {days.map(([dayNumber, dayName]) => (
-        <Day
-          key={dayName}
-          dayName={dayName}
-          dayNumber={dayNumber}
-          active={selectedDay === dayNumber}
-        />
+    <Container onClick={onChange}>
+      {week.map((day) => (
+        <Day key={day.date} date={day} active={selected === day.date} />
       ))}
     </Container>
   );
-});
+}
 
-export default DaySelector;
+export default memo(DaySelector);
