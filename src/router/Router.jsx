@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from 'react';
-import { BrowserRouter, Switch } from 'react-router-dom';
+import { BrowserRouter, Switch, Redirect } from 'react-router-dom';
 import Loading from '../components/Loading';
 import PrivateRoute from '../components/PrivateRoute';
 import RestrictedRoute from '../components/RestrictedRoute';
@@ -31,6 +31,7 @@ const Router = () => (
         <PrivateRoute path="/crono" component={Cronometer} exact />
         <PrivateRoute path="/profile" component={Profile} exact />
         <PrivateRoute path="/stats" component={Statistics} exact />
+        <Redirect to="/" />
       </Switch>
     </Suspense>
   </BrowserRouter>
