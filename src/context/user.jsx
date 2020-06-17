@@ -1,33 +1,46 @@
 import React, { createContext, useEffect, useState } from 'react';
 import { auth, firestore } from '../service/firebase';
 
-export const UserContext = createContext();
+function extractUser(user = {}) {
+  return {
+    uid: user.uid || '',
+    name: user.name || user.displayName || '',
+    photoURL: user.photoURL || '',
+    gender: user.gender || '',
+    email: user.email || ''
+  };
+}
 
-const getUser = ({
-  name = '',
-  gender = '',
-  email = '',
-  uid = '',
-  photoURL = ''
-} = {}) => ({
-  name,
-  gender,
-  email,
-  uid,
-  photoURL
-});
+function safeUserId() {
+  let user = {};
+
+  try {
+    user = JSON.parse(localStorage.getItem('user')) || {};
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(error);
+  }
+
+  return extractUser(user);
+}
+
+const initialValues = safeUserId() || {};
+
+export const UserContext = createContext({ user: initialValues });
 
 const UserProvider = ({ children }) => {
-  const [user, setUser] = useState(getUser());
+  const [user, setUser] = useState(initialValues);
 
   useEffect(() => {
     auth.onAuthStateChanged(async (credentials) => {
       if (credentials) {
         const doc = await firestore.doc(`user/${credentials.uid}`).get();
         const userData = doc.exists ? doc.data() : credentials;
-        setUser(getUser(userData));
+        setUser(extractUser(userData));
+        localStorage.setItem('user', JSON.stringify({ uid: credentials.uid }));
       } else {
-        setUser(getUser());
+        setUser(extractUser());
+        localStorage.removeItem('user');
       }
     });
   }, []);

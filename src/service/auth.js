@@ -1,4 +1,5 @@
-import firebase from 'firebase';
+import firebase from 'firebase/app';
+import 'firebase/auth';
 import { auth } from './firebase';
 
 class AuthError extends Error {
@@ -12,7 +13,8 @@ const GoogleProvider = new firebase.auth.GoogleAuthProvider();
 
 export async function loginWithEmailAndPassword({ email, password }) {
   try {
-    await auth.signInWithEmailAndPassword(email, password);
+    const { user } = await auth.signInWithEmailAndPassword(email, password);
+    localStorage.setItem('user', JSON.stringify({ uid: user.uid }));
   } catch (error) {
     switch (error.code) {
       case 'auth/invalid-email':
@@ -31,7 +33,8 @@ export async function loginWithEmailAndPassword({ email, password }) {
 
 export async function loginWithGoogle() {
   try {
-    await auth.signInWithPopup(GoogleProvider);
+    const { user } = await auth.signInWithPopup(GoogleProvider);
+    localStorage.setItem('user', JSON.stringify({ uid: user.uid }));
   } catch (error) {
     switch (error.code) {
       case 'auth/account-exists-with-different-credential':
@@ -58,7 +61,8 @@ export async function loginWithGoogle() {
 
 export async function signUpWithEmailAndPassword({ email, password }) {
   try {
-    await auth.createUserWithEmailAndPassword(email, password);
+    const { user } = await auth.createUserWithEmailAndPassword(email, password);
+    localStorage.setItem('user', JSON.stringify({ uid: user.uid }));
   } catch (error) {
     switch (error.code) {
       case 'auth/email-already-in-use':
@@ -77,4 +81,9 @@ export async function signUpWithEmailAndPassword({ email, password }) {
 
 export async function signOut() {
   await auth.signOut();
+  localStorage.removeItem('user');
+}
+
+export async function resetPassword(email) {
+  await auth.sendPasswordResetEmail(email);
 }
