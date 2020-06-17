@@ -2,7 +2,7 @@ import Fab from '@material-ui/core/Fab';
 import List from '@material-ui/core/List';
 import { Add, PlayArrow } from '@material-ui/icons';
 import React, { useCallback, useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import AddExercise from '../components/AddExercise';
 import DaySelector from '../components/DaySelector';
@@ -28,10 +28,14 @@ const FabContainer = styled.div`
 `;
 
 const Home = () => {
+  const history = useHistory();
   const [selectedDay, setSelectedDay] = useState(getToday());
   const [isModalOpen, setIsModelOpen] = useState(false);
   const { workout, addExercise } = useWorkout(selectedDay);
 
+  const goToCrono = useCallback(() => {
+    history.push('/crono', workout);
+  }, [history, workout]);
   const openModal = useCallback(() => setIsModelOpen(true), []);
   const closeModal = useCallback(() => setIsModelOpen(false), []);
   const onDayChange = useCallback((event) => {
@@ -59,9 +63,11 @@ const Home = () => {
       <DaySelector value={selectedDay} onChange={onDayChange} />
       <List>{ExerciseList}</List>
       <FabContainer>
-        <Fab color="secondary" aria-label="start" component={Link} to="/crono">
-          <PlayArrow />
-        </Fab>
+        {workout.exercises.length > 0 && (
+          <Fab color="secondary" aria-label="start" onClick={goToCrono}>
+            <PlayArrow />
+          </Fab>
+        )}
         <Fab color="primary" aria-label="add" onClick={openModal}>
           <Add />
         </Fab>

@@ -4,14 +4,22 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import Fab from '@material-ui/core/Fab';
+import IconButton from '@material-ui/core/IconButton';
 import Paper from '@material-ui/core/Paper';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
-import { Pause, PlayArrow, Stop } from '@material-ui/icons';
-import React, { useCallback, useState } from 'react';
+import {
+  KeyboardArrowLeft,
+  KeyboardArrowRight,
+  Pause,
+  PlayArrow,
+  Stop
+} from '@material-ui/icons';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import withCleanLayout from '../hoc/withCleanLayout';
+import useTimer from '../hook/timer';
 
 const useStyles = makeStyles((theme) => ({
   stop: {
@@ -52,7 +60,14 @@ const CronoTime = styled.div`
   font: 500 100px 'Roboto Mono';
 `;
 
+const RepsWrapper = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
+`;
+
 const Counter = styled.div`
+  grid-column: 2/3;
   text-align: center;
 
   span {
@@ -61,48 +76,83 @@ const Counter = styled.div`
 `;
 
 const ActionsButtons = styled.div`
+  width: 100%;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   align-items: center;
   justify-items: center;
   align-content: center;
-  justify-content: center;
+  justify-content: space-evenly;
   gap: 0.5rem;
   padding: 3rem 0;
 `;
 
 const Cronometer = () => {
   const history = useHistory();
-  const [isOpen, setIsOpen] = useState(false);
-  const classes = useStyles();
+  useEffect(() => {
+    if (history.location.state.exercises.length === 0) {
+      history.push('/');
+    }
+  }, [history]);
+  const { state: workout } = history.location;
 
-  const handleOpen = useCallback(() => setIsOpen(true), []);
+  const [index, setIndex] = useState(0);
+  const currentExercise = useMemo(() => workout.exercises[index], [
+    index,
+    workout
+  ]);
+
+  const classes = useStyles();
+  const [isOpen, setIsOpen] = useState(false);
+  const { time, play, pause, isCounting } = useTimer();
+  const handleOpen = useCallback(() => {
+    pause();
+    setIsOpen(true);
+  }, []);
   const handleClose = useCallback(() => setIsOpen(false), []);
   const goToHome = useCallback(() => history.push('/'), [history]);
+  const prevExercise = useCallback(() => setIndex(index - 1), [index]);
+  const nextExercise = useCallback(() => setIndex(index + 1), [index]);
 
   return (
     <Wrapper>
       <div>
-        <Typography variant="subtitle1">Current exercise</Typography>
-        <Typography variant="h4">Pull Ups</Typography>
+        <Typography align="center" variant="subtitle1">
+          Current exercise
+        </Typography>
+        <Typography variant="h4">{currentExercise.name}</Typography>
       </div>
       <CronoTime>
-        <span>00:50</span>
+        <span>{time}</span>
       </CronoTime>
-      <Counter>
-        <Typography variant="h6">Reps</Typography>
-        <span>05/10</span>
-      </Counter>
+      <RepsWrapper>
+        <IconButton disabled={index === 0} onClick={prevExercise}>
+          <KeyboardArrowLeft fontSize="large" />
+        </IconButton>
+        <Counter>
+          <Typography variant="h6">Reps</Typography>
+          <span>{currentExercise.reps}</span>
+        </Counter>
+        <IconButton
+          disabled={index + 1 === workout.exercises.length}
+          onClick={nextExercise}
+        >
+          <KeyboardArrowRight fontSize="large" />
+        </IconButton>
+      </RepsWrapper>
       <ActionsButtons>
-        <Fab className={classes.stop} onClick={handleOpen}>
-          <Stop />
+        <Fab className={`${classes.stop} ${classes.big}`} onClick={handleOpen}>
+          <Stop className={classes.bigIcon} />
         </Fab>
-        <Fab color="primary" className={classes.big}>
-          <Pause className={classes.bigIcon} />
-        </Fab>
-        <Fab color="secondary">
-          <PlayArrow />
-        </Fab>
+        {isCounting ? (
+          <Fab color="primary" onClick={pause} className={classes.big}>
+            <Pause className={classes.bigIcon} />
+          </Fab>
+        ) : (
+          <Fab color="secondary" onClick={play} className={classes.big}>
+            <PlayArrow className={classes.bigIcon} />
+          </Fab>
+        )}
       </ActionsButtons>
       <Dialog open={isOpen} onClose={handleClose}>
         <DialogContent>
