@@ -108,7 +108,7 @@ const Cronometer = () => {
   const handleOpen = useCallback(() => {
     pause();
     setIsOpen(true);
-  }, []);
+  }, [pause]);
   const handleClose = useCallback(() => setIsOpen(false), []);
   const goToHome = useCallback(() => history.push('/'), [history]);
   const prevExercise = useCallback(() => setIndex(index - 1), [index]);
