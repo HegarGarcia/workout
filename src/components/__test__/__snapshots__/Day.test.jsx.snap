@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Day /> spec Should not regress 1`] = `
+<div>
+  <button
+    class="sc-AxjAm gnohHb"
+    data-date="2020 06 17"
+    data-testid="day-container"
+  >
+    <p
+      class="MuiTypography-root MuiTypography-overline"
+    >
+      WED
+    </p>
+    <div
+      class="sc-AxirZ lnryAL"
+    >
+      <span>
+        17
+      </span>
+    </div>
+  </button>
+</div>
+`;

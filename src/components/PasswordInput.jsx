@@ -12,6 +12,7 @@ const PasswordInput = ({
   label,
   value,
   onChange,
+  name,
   fullWidth = true,
   variant = 'filled'
 }) => {
@@ -36,6 +37,7 @@ const PasswordInput = ({
       <InputLabel htmlFor={label}>{label}</InputLabel>
       <FilledInput
         type={showPassword ? 'text' : 'password'}
+        name={name}
         value={value}
         onChange={onChange}
         endAdornment={Adornment}

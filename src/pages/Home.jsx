@@ -1,30 +1,15 @@
-import { Fab, ListItemSecondaryAction } from '@material-ui/core';
+import Fab from '@material-ui/core/Fab';
 import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import { Add, PlayArrow, Reorder } from '@material-ui/icons';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Add, PlayArrow } from '@material-ui/icons';
+import React, { useCallback, useState, useMemo } from 'react';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import AddExercise from '../components/AddExercise';
 import DaySelector from '../components/DaySelector';
-import { LayoutContext } from '../context/layout';
-
-const formatter = new Intl.NumberFormat();
-
-const getDateFormated = () => new Date().toDateString().substr(3, 7);
-
-const Exercise = ({ exercise, reps }) => (
-  <ListItem>
-    <ListItemText
-      primary={exercise}
-      secondary={`${formatter.format(reps)} reps`}
-    />
-    <ListItemSecondaryAction>
-      <Reorder />
-    </ListItemSecondaryAction>
-  </ListItem>
-);
+import Exercise from '../components/Exercise';
+import withMainLayout from '../hoc/withMainLayout';
+import useWorkout from '../hook/workout';
+import { getToday } from '../utils/date';
 
 const StyledSection = styled.section`
   width: 100%;
@@ -43,40 +28,57 @@ const FabContainer = styled.div`
 `;
 
 const Home = () => {
-  const { setMain } = useContext(LayoutContext);
-  const [isOpen, setIsOpen] = useState(false);
-  const handleClose = useCallback(() => setIsOpen(false), []);
-  const handleOpen = useCallback(() => setIsOpen(true), []);
+  const history = useHistory();
+  const [selectedDay, setSelectedDay] = useState(getToday());
+  const [isModalOpen, setIsModelOpen] = useState(false);
+  const { workout, addExercise } = useWorkout(selectedDay);
 
-  useEffect(() => {
-    setMain({ title: getDateFormated() });
-  }, [setMain]);
+  const goToCrono = useCallback(() => {
+    history.push('/crono', workout);
+  }, [history, workout]);
+  const openModal = useCallback(() => setIsModelOpen(true), []);
+  const closeModal = useCallback(() => setIsModelOpen(false), []);
+  const onDayChange = useCallback((event) => {
+    const { date } = event.target.closest('[data-date]').dataset;
+    setSelectedDay(date);
+  }, []);
+  const onExerciseAdd = useCallback(
+    async ({ exercise, reps }) => {
+      await addExercise({ name: exercise, reps });
+      closeModal();
+    },
+    [addExercise, closeModal]
+  );
 
-  const exercises = [
-    { name: 'Pullups', reps: 69420 },
-    { name: 'Squads', reps: 30 },
-    { name: 'Pushups', reps: 40 }
-  ];
+  const ExerciseList = useMemo(() => {
+    const { exercises } = workout;
+    return exercises.map((exercise, index) => (
+      // eslint-disable-next-line react/no-array-index-key
+      <Exercise key={index} exercise={exercise} />
+    ));
+  }, [workout]);
 
   return (
     <StyledSection>
-      <DaySelector />
-      <List>
-        {exercises.map(({ name, reps }) => (
-          <Exercise key={name + reps} exercise={name} reps={reps} />
-        ))}
-      </List>
+      <DaySelector value={selectedDay} onChange={onDayChange} />
+      <List>{ExerciseList}</List>
       <FabContainer>
-        <Fab color="secondary" aria-label="start" component={Link} to="/crono">
-          <PlayArrow />
-        </Fab>
-        <Fab color="primary" aria-label="add" onClick={handleOpen}>
+        {workout.exercises.length > 0 && (
+          <Fab color="secondary" aria-label="start" onClick={goToCrono}>
+            <PlayArrow />
+          </Fab>
+        )}
+        <Fab color="primary" aria-label="add" onClick={openModal}>
           <Add />
         </Fab>
       </FabContainer>
-      <AddExercise isOpen={isOpen} handleClose={handleClose} />
+      <AddExercise
+        isOpen={isModalOpen}
+        handleClose={closeModal}
+        handleSubmit={onExerciseAdd}
+      />
     </StyledSection>
   );
 };
 
-export default Home;
+export default withMainLayout({ title: 'Exercises' })(Home);

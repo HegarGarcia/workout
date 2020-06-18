@@ -5,6 +5,7 @@ import CenterWrapper from '../styles/CenterWrapper';
 
 const Wrapper = styled(CenterWrapper)`
   justify-items: center;
+  background-color: #212121;
 `;
 
 const Loading = () => (

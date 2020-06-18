@@ -1,16 +1,13 @@
-import {
-  Avatar,
-  Button,
-  Divider,
-  makeStyles,
-  Typography
-} from '@material-ui/core';
-import React, { useCallback, useContext, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import Avatar from '@material-ui/core/Avatar';
+import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import Typography from '@material-ui/core/Typography';
+import React from 'react';
 import styled from 'styled-components';
-import ProfileImg from '../assets/profile.jpg';
-import { AuthContext } from '../context/auth';
-import { LayoutContext } from '../context/layout';
+import withMainLayout from '../hoc/withMainLayout';
+import useUser from '../hook/user';
+import { signOut } from '../service/auth';
 
 const useStyles = makeStyles((theme) => ({
   large: {
@@ -53,45 +50,33 @@ const StyledList = styled.ul`
 `;
 
 const Profile = () => {
-  const history = useHistory();
-  const { setMain } = useContext(LayoutContext);
-  const { logout } = useContext(AuthContext);
-
-  const signout = useCallback(() => {
-    logout();
-    history.push('/welcome');
-  }, [history, logout]);
-
-  useEffect(() => {
-    setMain({ title: 'Profile' });
-  }, [setMain]);
-
   const classes = useStyles();
+  const { user } = useUser();
 
   return (
     <Wrapper>
-      <Avatar src={ProfileImg} className={classes.large} />
+      <Avatar src={user.photoURL} className={classes.large} />
       <StyledList>
         <li>
           <Typography variant="overline">Name</Typography>
-          <Typography variant="subtitle1">Ritthy Hoffman</Typography>
+          <Typography variant="subtitle1">{user.name}</Typography>
         </li>
         <Divider />
         <li>
           <Typography variant="overline">Email</Typography>
-          <Typography variant="subtitle1">
-            ritthy.hoffman@example.com
-          </Typography>
+          <Typography variant="subtitle1">{user.email}</Typography>
         </li>
         <Divider />
         <li>
           <Typography variant="overline">Gender</Typography>
-          <Typography variant="subtitle1">Male</Typography>
+          <Typography variant="subtitle1">
+            {user.gender.toUpperCase()}
+          </Typography>
         </li>
       </StyledList>
-      <Button onClick={signout}>Sign out</Button>
+      <Button onClick={signOut}>Sign out</Button>
     </Wrapper>
   );
 };
 
-export default Profile;
+export default withMainLayout({ title: 'Profile' })(Profile);

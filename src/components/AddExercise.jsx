@@ -1,21 +1,19 @@
-import {
-  Button,
-  FormControl,
-  InputLabel,
-  makeStyles,
-  MenuItem,
-  Select,
-  Slide,
-  TextField,
-  Typography
-} from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
+import Button from '@material-ui/core/Button';
 import { grey } from '@material-ui/core/colors';
 import Dialog from '@material-ui/core/Dialog';
+import FormControl from '@material-ui/core/FormControl';
 import IconButton from '@material-ui/core/IconButton';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import Slide from '@material-ui/core/Slide';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import TextField from '@material-ui/core/TextField';
 import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
 import { Close } from '@material-ui/icons';
-import React, { useCallback, useState } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
@@ -43,13 +41,21 @@ const Transition = React.forwardRef((props, ref) => (
   <Slide direction="up" ref={ref} {...props} />
 ));
 
-const AddExercise = ({ isOpen, handleClose }) => {
+const AddExercise = ({ isOpen, handleClose, handleSubmit }) => {
   const classes = useStyles();
   const [exercise, setExercise] = useState('');
   const handleSelect = useCallback(
     (event) => setExercise(event.target.value),
     []
   );
+  const [reps, setReps] = useState();
+  const onChange = (event) => setReps(+event.target.value);
+
+  const submit = useCallback(() => handleSubmit({ exercise, reps }), [
+    exercise,
+    reps,
+    handleSubmit
+  ]);
 
   return (
     <Dialog
@@ -71,7 +77,7 @@ const AddExercise = ({ isOpen, handleClose }) => {
           <Typography variant="h6" className={classes.title}>
             Add Exercise
           </Typography>
-          <Button color="inherit" onClick={handleClose}>
+          <Button color="inherit" onClick={submit}>
             save
           </Button>
         </Toolbar>
@@ -86,17 +92,23 @@ const AddExercise = ({ isOpen, handleClose }) => {
             label="Gender"
             fullWidth
           >
-            <MenuItem value="pushups">Push Ups</MenuItem>
-            <MenuItem value="pullups">Pull Ups</MenuItem>
-            <MenuItem value="squads">Squads</MenuItem>
-            <MenuItem value="burpees">Burpees</MenuItem>
-            <MenuItem value="mountain climber">Mountain Climber</MenuItem>
+            <MenuItem value="Push Ups">Push Ups</MenuItem>
+            <MenuItem value="Pull Ups">Pull Ups</MenuItem>
+            <MenuItem value="Squads">Squads</MenuItem>
+            <MenuItem value="Burpees">Burpees</MenuItem>
+            <MenuItem value="Mountain Climber">Mountain Climber</MenuItem>
           </Select>
         </FormControl>
-        <TextField fullWidth variant="filled" label="Reps" />
+        <TextField
+          fullWidth
+          variant="filled"
+          label="Reps"
+          type="number"
+          onChange={onChange}
+        />
       </Wrapper>
     </Dialog>
   );
 };
 
-export default AddExercise;
+export default memo(AddExercise);
